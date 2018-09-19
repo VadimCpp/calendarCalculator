@@ -41,6 +41,15 @@
             <button id="list-events-btn" class="button rounded py-2 px-3">Получить список событий</button>            
         </p>        
     </section>
+    <section id="calculator-panel" style="display:none;" class="container py-4">
+        <h2> Калькулятор данных </h2>
+        <p id="calculation">
+            ...
+        </p>
+        <p>
+            <button id="calculate-btn" class="button rounded py-2 px-3">Рассчитать еще раз</button>            
+        </p>        
+    </section>
 
     <script
         src="https://code.jquery.com/jquery-3.3.1.min.js"
@@ -75,6 +84,8 @@
                 updateCalendarsPanel();
                 updateCalendarsList();
                 updateEventsPanel();
+                updateCalculatorPanel();
+                updateCalculation();                
 
                 $('#authorize-btn').click(function() {                
                     gapi.auth2.getAuthInstance().signIn();                                    
@@ -91,6 +102,10 @@
                 $('#list-events-btn').click(function() {
                     updateEventsList();
                 });
+
+                $('#calculate-btn').click(function() {
+                    updateCalculation();
+                });
             });
 
             /**
@@ -105,6 +120,8 @@
                 updateCalendarsRadioList();
                 updateEventsPanel();
                 updateEventsList();
+                updateCalculatorPanel();
+                updateCalculation();
             }
 
             /**
@@ -213,6 +230,8 @@
                     $('input[type=radio][name=calendars-group]').on('change', function() {
                         updateEventsPanel();
                         updateEventsList();
+                        updateCalculatorPanel();
+                        updateCalculation();
                     });
                 } else {
                     $('#calendars-radio-list').html('');
@@ -236,7 +255,6 @@
              * Updates list of events.
              */  
             function updateEventsList() {
-
                 var calendarId = $('input[name=calendars-group]:checked').val();
                 
                 $('#events-list').html('...');
@@ -269,8 +287,78 @@
                 } else {
                     $('#events-list').html('пусто');
                 }
-
             };
+
+            /**
+             * UI method.
+             * Updates visibility of events panel.
+             */
+            function updateCalculatorPanel() {
+                if ($('input[name=calendars-group]:checked').val()) {
+                    $("#calculator-panel").show();                    
+                } else {
+                    $("#calculator-panel").hide();
+                }
+            }
+
+            /**
+             * UI method.
+             * Updates calculation.
+             */  
+            function updateCalculation() {
+                console.log('updateCalculation');
+
+                var calendarId = $('input[name=calendars-group]:checked').val();
+                
+                $('#calculation').html('...');
+
+                if ($('input[name=calendars-group]:checked').val()) {
+
+                    var beginningOfCurrentYear = moment((new Date(new Date().getFullYear(), 0, 1)).getTime()).format();
+
+                    gapi.client.request({
+                        'path': 'https://www.googleapis.com/calendar/v3/calendars/' + calendarId + '/events' + 
+                                '?timeMin=' + encodeURIComponent(beginningOfCurrentYear),
+                    }).then(function(response) {
+
+                        if (response && response.result && response.result.items) {                            
+                            var text = 'По месяцам:<br>';
+                            var month = '';
+                            var total = 0;
+                            for (var i = 0; i < response.result.items.length; i++) {
+
+                                var item = response.result.items[i];
+                                var itemMonth = (moment(item.start.dateTime).month());
+                                if (month != itemMonth) {
+                                    if (month) {
+                                        text += 'Итого: ' + total;
+                                        text += '<br>';
+                                        total = 0;
+                                    }
+
+                                    text += 'Месяц ' + itemMonth + '<br>' ;
+                                    month = itemMonth;
+                                }
+                                total += isNaN(parseInt(item.summary)) ? 0 : parseInt(item.summary);
+                                text += ' + ' + item.summary;
+                                text += '<br>';
+                            }
+                            text += 'Итого: ' + total;
+                            text += '<br>';
+                            $('#calculation').html(text);
+                        } else {
+                            $('#calculation').html('пусто');
+                        }
+
+                    }, function(reason) {
+                        $('#calculation').html('пусто');
+                    });
+
+                } else {
+                    $('#calculation').html('пусто');
+                }
+            }
+
         };
 
         gapi.load('client', start);
