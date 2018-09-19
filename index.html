@@ -17,14 +17,28 @@
             <button id="signout-btn" class="button rounded py-2 px-3" disabled="true">Выйти</button>
         </p>
     </section>
-    <section id="calendars-panel" style="display:none;" class="container py-4">
-        <h2> Управления календарями </h2>
+    <section id="calendars-panel" style="display:none;" class="container py-4">        
+        <h2> Управление календарями </h2>
         <p>
-            <b> Календари </b> <span id="calendars-list"> пусто </span>
+            <b> Календари </b> <br> <span id="calendars-list"> пусто </span>
         </p>
         <hr>
         <p>
             <button id="list-calendars-btn" class="button rounded py-2 px-3">Получить список календарей</button>            
+        </p>
+        <p> <b> Выберите календарь: </b> </p>
+        <ul id="calendars-radio-list" class="list-group">
+
+        </ul>
+    </section>
+    <section id="events-panel" style="display:none;" class="container py-4">
+        <h2> События в текущем месяце </h2>
+        <p>
+            <b> События </b> <span id="events-list"> пусто </span>
+        </p>
+        <hr>
+        <p>
+            <button id="list-events-btn" class="button rounded py-2 px-3">Получить список событий</button>            
         </p>        
     </section>
 
@@ -33,7 +47,14 @@
         integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
         crossorigin="anonymous"></script>
     <script src="https://apis.google.com/js/api.js"></script>
+    <script src="https://momentjs.com/downloads/moment.js"></script>
     <script>
+        /**
+         * Global app variables.
+         */
+        var globals = {
+            calendarsList: null
+        };
 
         function start() {
             /**
@@ -52,7 +73,8 @@
                 updateAuthButtonPanel();
                 updateUserName();
                 updateCalendarsPanel();
-                updateCalendarsList(); 
+                updateCalendarsList();
+                updateEventsPanel();
 
                 $('#authorize-btn').click(function() {                
                     gapi.auth2.getAuthInstance().signIn();                                    
@@ -65,6 +87,10 @@
                 $('#list-calendars-btn').click(function() {
                     updateCalendarsList();
                 });
+
+                $('#list-events-btn').click(function() {
+                    updateEventsList();
+                });
             });
 
             /**
@@ -75,7 +101,10 @@
                 updateAuthButtonPanel();
                 updateUserName();
                 updateCalendarsPanel();   
-                updateCalendarsList();             
+                updateCalendarsList();
+                updateCalendarsRadioList();
+                updateEventsPanel();
+                updateEventsList();
             }
 
             /**
@@ -130,12 +159,16 @@
             function updateCalendarsList(success, data) {
 
                 $('#calendars-list').text('...');
+                
+                globals.calendarsList = null;
+                updateCalendarsRadioList();
 
                 gapi.client.request({
                     'path': 'https://www.googleapis.com/calendar/v3/users/me/calendarList',
                 }).then(function(response) {
-                    console.log('OK', response);
+
                     if (response && response.result && response.result.items && response.result.items.length) {
+                        globals.calendarsList = response.result.items;
                         var text = '';
 
                         for (var i = 0; i < response.result.items.length; i++) {
@@ -150,10 +183,94 @@
                         $('#calendars-list').text('пусто');
                     }
                     
+                    updateCalendarsRadioList();
+
                 }, function(reason) {
                     $('#calendars-list').text('пусто');
+                    updateCalendarsRadioList();
                 });
             }
+
+            /**
+             * UI method.
+             * Updates list of calendars.
+             */  
+            function updateCalendarsRadioList() {
+
+                if (globals.calendarsList) {
+                    var text = '';
+
+                    for (var i = 0; i < globals.calendarsList.length; i++) {
+                        text += 
+                            '<li class="list-group-item">' +
+                            '<input type="radio" value="' + globals.calendarsList[i].id + '" name="calendars-group">' +
+                            ' <label for="' + globals.calendarsList[i].id + '">' + globals.calendarsList[i].summary + '</label>' +
+                            '</li>';                              
+                    }
+                    
+                    $('#calendars-radio-list').html(text);
+
+                    $('input[type=radio][name=calendars-group]').on('change', function() {
+                        updateEventsPanel();
+                        updateEventsList();
+                    });
+                } else {
+                    $('#calendars-radio-list').html('');
+                }
+            }
+
+            /**
+             * UI method.
+             * Updates visibility of events panel.
+             */
+            function updateEventsPanel() {
+                if ($('input[name=calendars-group]:checked').val()) {
+                    $("#events-panel").show();                    
+                } else {
+                    $("#events-panel").hide();
+                }
+            }
+
+            /**
+             * UI method.
+             * Updates list of events.
+             */  
+            function updateEventsList() {
+
+                var calendarId = $('input[name=calendars-group]:checked').val();
+                
+                $('#events-list').html('...');
+
+                if ($('input[name=calendars-group]:checked').val()) {
+
+                    var beginningOfCurrentYear = moment((new Date(new Date().getFullYear(), 0, 1)).getTime()).format();
+
+                    gapi.client.request({
+                        'path': 'https://www.googleapis.com/calendar/v3/calendars/' + calendarId + '/events' + 
+                                '?timeMin=' + encodeURIComponent(beginningOfCurrentYear),
+                    }).then(function(response) {
+
+                        if (response && response.result && response.result.items) {
+                            var total = '' + response.result.items.length + ' запись(ей)<br>';
+                            var text = total;
+                            for (var i = 0; i < response.result.items.length; i++) {
+                                text += response.result.items[i].summary + ' : ' + response.result.items[i].description
+                                text += '<br>';
+                            }
+                            $('#events-list').html(text);
+                        } else {
+                            $('#events-list').html('пусто');
+                        }
+
+                    }, function(reason) {
+                        $('#events-list').html('пусто');
+                    });
+
+                } else {
+                    $('#events-list').html('пусто');
+                }
+
+            };
         };
 
         gapi.load('client', start);
