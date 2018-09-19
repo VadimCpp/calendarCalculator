@@ -8,16 +8,26 @@
     <header class="container-fluid py-5 bg-dark text-white">
         <h1 class="text-center">Календарь-калькулятор</h1>
     </header>
-    <main class="container py-4">
-        <h2> Панель управления </h2>    
-        <p> <b> Пользователь </b> <span id="userName"> ... </span> </p>
+    <section class="container py-4">
+        <h2> Панель управления аккаунтом </h2>
+        <p> <b> Пользователь </b> <span id="user-name"> ... </span> </p>
         <hr>
         <p>
             <button id="authorize-btn" class="button rounded py-2 px-3" disabled="true">Войти</button>
             <button id="signout-btn" class="button rounded py-2 px-3" disabled="true">Выйти</button>
         </p>
-    </main>
-    
+    </section>
+    <section id="calendars-panel" style="display:none;" class="container py-4">
+        <h2> Управления календарями </h2>
+        <p>
+            <b> Календари </b> <span id="calendars-list"> пусто </span>
+        </p>
+        <hr>
+        <p>
+            <button id="list-calendars-btn" class="button rounded py-2 px-3">Получить список календарей</button>            
+        </p>        
+    </section>
+
     <script
         src="https://code.jquery.com/jquery-3.3.1.min.js"
         integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
@@ -33,13 +43,16 @@
             gapi.client.init({
                 'apiKey': 'AIzaSyA-udSmPEWrf2gzxZeqV-dfBLrYnT1Cd5I',
                 'clientId': '432393497287-9i1o458ibu2lk00h6h9el7mimhkd8dvq.apps.googleusercontent.com',
-                'scope': 'profile',
+                'scope': 'profile https://www.googleapis.com/auth/calendar.readonly',
+
             }).then(function() {
 
                 gapi.auth2.getAuthInstance().isSignedIn.listen(signinStatusEvent);
 
                 updateAuthButtonPanel();
                 updateUserName();
+                updateCalendarsPanel();
+                updateCalendarsList(); 
 
                 $('#authorize-btn').click(function() {                
                     gapi.auth2.getAuthInstance().signIn();                                    
@@ -49,6 +62,9 @@
                     gapi.auth2.getAuthInstance().signOut();
                 });
               
+                $('#list-calendars-btn').click(function() {
+                    updateCalendarsList();
+                });
             });
 
             /**
@@ -58,6 +74,8 @@
             function signinStatusEvent(isSignedIn) {
                 updateAuthButtonPanel();
                 updateUserName();
+                updateCalendarsPanel();   
+                updateCalendarsList();             
             }
 
             /**
@@ -82,17 +100,60 @@
                 gapi.client.request({
                     'path': 'https://people.googleapis.com/v1/people/me?requestMask.includeField=person.names',
                 }).then(function(response) {
-                    $("#userName").text(
+                    $("#user-name").text(
                         response.result.names && response.result.names[0] && response.result.names[0].displayName ? 
                         response.result.names[0].displayName : 
                         'Имя не указано ☹️'
                     );
                 }, function(reason) {
                     console.log('Error: ' + reason && reason.result && reason.result.error && reason.result.error.message ? reason.result.error.message : 'Неизвестная ошибка');
-                    $("#userName").text('Анон 😎');
+                    $("#user-name").text('Анон 😎');
                 });
             }
 
+            /**
+             * UI method.
+             * Updates user name.
+             */
+            function updateCalendarsPanel() {
+                if (gapi.auth2.getAuthInstance().isSignedIn.get()) {
+                    $("#calendars-panel").show();                    
+                } else {
+                    $("#calendars-panel").hide();
+                }
+            }
+
+            /**
+             * UI method.
+             * Updates list of calendars.
+             */  
+            function updateCalendarsList(success, data) {
+
+                $('#calendars-list').text('...');
+
+                gapi.client.request({
+                    'path': 'https://www.googleapis.com/calendar/v3/users/me/calendarList',
+                }).then(function(response) {
+                    console.log('OK', response);
+                    if (response && response.result && response.result.items && response.result.items.length) {
+                        var text = '';
+
+                        for (var i = 0; i < response.result.items.length; i++) {
+                            text += response.result.items[i].summary;
+                            if (i < response.result.items.length - 1) {
+                                text += ", ";
+                            }
+                        }
+                        
+                        $('#calendars-list').text(text);
+                    } else {
+                        $('#calendars-list').text('пусто');
+                    }
+                    
+                }, function(reason) {
+                    $('#calendars-list').text('пусто');
+                });
+            }
         };
 
         gapi.load('client', start);
