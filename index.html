@@ -9,11 +9,93 @@
         <h1 class="text-center">Календарь-калькулятор</h1>
     </header>
     <main class="container py-4">
-        TODO:
+        <h2> Панель управления </h2>    
+        <p> <b> Пользователь </b> <span id="userName"> ... </span> </p>
+        <hr>
+        <p>
+            <button id="authorize-btn" class="button rounded py-2 px-3" disabled="true">Войти</button>
+            <button id="signout-btn" class="button rounded py-2 px-3" disabled="true">Выйти</button>
+        </p>
     </main>
+    
     <script
         src="https://code.jquery.com/jquery-3.3.1.min.js"
         integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
         crossorigin="anonymous"></script>
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script>
+
+        function start() {
+            /**
+             * Init the client first.
+             * Then init the model and update UI.
+             */
+            gapi.client.init({
+                'apiKey': 'AIzaSyA-udSmPEWrf2gzxZeqV-dfBLrYnT1Cd5I',
+                'clientId': '432393497287-9i1o458ibu2lk00h6h9el7mimhkd8dvq.apps.googleusercontent.com',
+                'scope': 'profile',
+            }).then(function() {
+
+                gapi.auth2.getAuthInstance().isSignedIn.listen(signinStatusEvent);
+
+                updateAuthButtonPanel();
+                updateUserName();
+
+                $('#authorize-btn').click(function() {                
+                    gapi.auth2.getAuthInstance().signIn();                                    
+                });
+
+                $('#signout-btn').click(function() {                
+                    gapi.auth2.getAuthInstance().signOut();
+                });
+              
+            });
+
+            /**
+             * Handler.
+             * Listen to auth status beeing changed.
+             */
+            function signinStatusEvent(isSignedIn) {
+                updateAuthButtonPanel();
+                updateUserName();
+            }
+
+            /**
+             * UI method.
+             * Updates auth button panel.
+             */
+            function updateAuthButtonPanel() {
+                if (gapi.auth2.getAuthInstance().isSignedIn.get()) {
+                    $("#authorize-btn").prop('disabled', true);
+                    $("#signout-btn").prop('disabled', false);                    
+                } else {
+                    $("#authorize-btn").prop('disabled', false);
+                    $("#signout-btn").prop('disabled', true);
+                }
+            }
+
+            /**
+             * UI method.
+             * Updates user name.
+             */
+            function updateUserName() {
+                gapi.client.request({
+                    'path': 'https://people.googleapis.com/v1/people/me?requestMask.includeField=person.names',
+                }).then(function(response) {
+                    $("#userName").text(
+                        response.result.names && response.result.names[0] && response.result.names[0].displayName ? 
+                        response.result.names[0].displayName : 
+                        'Имя не указано ☹️'
+                    );
+                }, function(reason) {
+                    console.log('Error: ' + reason && reason.result && reason.result.error && reason.result.error.message ? reason.result.error.message : 'Неизвестная ошибка');
+                    $("#userName").text('Анон 😎');
+                });
+            }
+
+        };
+
+        gapi.load('client', start);
+    </script>
 </body>
 </html>
