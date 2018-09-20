@@ -6,47 +6,108 @@
 
     <title>Календарь-калькулятор</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <style>
+        .one-row {
+            padding-right: 50px;
+            /* word-break: break-word; */
+            /* overflow: hidden; */
+            /* text-overflow: ellipsis; */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
 </head>
 <body>
-    <header class="container-fluid py-5 bg-dark text-white">
-        <h1 class="text-center">Календарь-калькулятор</h1>
+    <header class="container-fluid py-3 bg-dark text-white">
+        <h1 class="text-center h2">Календарь-калькулятор</h1>
     </header>
-    <section class="container py-4">
-        <h2> Панель управления аккаунтом </h2>
-        <p> <b> Пользователь </b> <span id="user-name"> ... </span> </p>
-        <hr>
-        <p>
+
+    <!-- Панель управления аккаунтом -->
+    <section id="auth-panel" class="container pt-4 position-relative">
+        <h2 class="expandable"> Панель управления аккаунтом </h2>
+        <p class="mt-2 one-row"> <b> Пользователь </b> <span id="user-name"> ... </span> </p>
+        <hr class="expandable">
+        <p class="expandable">
             <button id="authorize-btn" class="button rounded py-2 px-3" disabled="true">Войти</button>
             <button id="signout-btn" class="button rounded py-2 px-3" disabled="true">Выйти</button>
         </p>
+        <button 
+            id="auth-panel-expand-btn" 
+            class="button rounded position-absolute py-2 px-3 mt-4 mr-3" 
+            style="top:0; right:0; display:none;">
+            <i class="fas fa-caret-down"></i>
+        </button>
+        <button 
+            id="auth-panel-collapse-btn"
+            class="button rounded position-absolute py-2 px-3 mt-4 mr-3"
+            style="top:0; right:0;">
+            <i class="fas fa-caret-up"></i>
+        </button>
     </section>
-    <section id="calendars-panel" style="display:none;" class="container py-4">        
-        <h2> Управление календарями </h2>
-        <p>
+
+    <!-- Панель управления календарями -->
+    <section id="calendars-panel" style="display:none;" class="container pt-4 position-relative">        
+        <h2 class="expandable"> Панель управления календарями </h2>
+        <p class="mt-2 one-row">
+            <b> Календарь </b> <span id="current-calendar"> не выбран </span>
+        </p>
+        <p class="expandable">
             <b> Календари </b> <br> <span id="calendars-list"> пусто </span>
         </p>
-        <hr>
-        <p>
+        <hr class="expandable">
+        <p class="expandable">
             <button id="list-calendars-btn" class="button rounded py-2 px-3">Получить список календарей</button>            
         </p>
-        <p> <b> Выберите календарь: </b> </p>
-        <ul id="calendars-radio-list" class="list-group">
+        <p class="expandable"> <b> Выберите календарь: </b> </p>
+        <ul id="calendars-radio-list" class="list-group expandable">
 
         </ul>
+
+        <button
+            id="calendars-panel-expand-btn"
+            class="button rounded position-absolute py-2 px-3 mt-4 mr-3"
+            style="top:0; right:0; display:none;">
+            <i class="fas fa-caret-down"></i>
+        </button>
+        <button 
+            id="calendars-panel-collapse-btn"
+            class="button rounded position-absolute py-2 px-3 mt-4 mr-3"
+            style="top:0; right:0;">
+            <i class="fas fa-caret-up"></i>
+        </button>
     </section>
-    <section id="events-panel" style="display:none;" class="container py-4">
-        <h2> События в текущем месяце </h2>
-        <p>
-            <b> События </b> <span id="events-list"> пусто </span>
+
+    <!-- События в текущем году -->
+    <section id="events-panel" style="display:none;" class="container pt-4 position-relative">
+        <h2 class="expandable"> События в текущем году </h2>
+        <p class="mt-2 one-row">
+            <b> События </b> <span id="events-list" class="expandable"> пусто </span>
         </p>
-        <hr>
-        <p>
+        <hr class="expandable">
+        <p class="expandable">
             <button id="list-events-btn" class="button rounded py-2 px-3">Получить список событий</button>            
-        </p>        
+        </p>
+
+        <button
+            id="events-panel-expand-btn"
+            class="button rounded position-absolute py-2 px-3 mt-4 mr-3"
+            style="top:0; right:0; display:none;">
+            <i class="fas fa-caret-down"></i>
+        </button>
+        <button 
+            id="events-panel-collapse-btn"
+            class="button rounded position-absolute py-2 px-3 mt-4 mr-3"
+            style="top:0; right:0;">
+            <i class="fas fa-caret-up"></i>
+        </button>
     </section>
-    <section id="calculator-panel" style="display:none;" class="container py-4">
+
+    <!-- Калькулятор данных -->
+    <section id="calculator-panel" style="display:none;" class="container pt-4 position-relative">
         <h2> Калькулятор данных </h2>
-        <p id="calculation"> пусто </p>
+        <p id="calculation" style="word-break: break-all;"> пусто </p>
         <p>
             <button id="calculate-btn" class="button rounded py-2 px-3">Рассчитать еще раз</button>            
         </p>        

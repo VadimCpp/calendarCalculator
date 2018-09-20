@@ -46,6 +46,22 @@ function start() {
         $('#calculate-btn').click(function() {
             updateCalculation();
         });
+
+        $('#auth-panel-expand-btn').click(expandAuthPanel);
+
+        $('#auth-panel-collapse-btn').click(collapseAuthPanel);
+
+        $('#calendars-panel-expand-btn').click(expandCalendarsPanel);
+
+        $('#calendars-panel-collapse-btn').click(collapseCalendarsPanel); 
+
+        $('#events-panel-expand-btn').click(expandEventsPanel);
+
+        $('#events-panel-collapse-btn').click(collapseEventsPanel);
+
+        collapseAuthPanel();
+        collapseCalendarsPanel();     
+        collapseEventsPanel();
     });
 
     /**
@@ -62,6 +78,66 @@ function start() {
         updateEventsList();
         updateCalculatorPanel();
         updateCalculation();
+    }
+
+    /**
+     * Handler.
+     * Expand authorization panel
+     */    
+    function expandAuthPanel() {            
+        $('#auth-panel-expand-btn').hide();
+        $('#auth-panel-collapse-btn').show();
+        $('#auth-panel .expandable').show();
+    }
+
+    /**
+     * Handler.
+     * Collapse authorization panel
+     */    
+    function collapseAuthPanel() {            
+        $('#auth-panel-collapse-btn').hide();
+        $('#auth-panel-expand-btn').show();
+        $('#auth-panel .expandable').hide();
+    }
+
+    /**
+     * Handler.
+     * Expand calendars panel
+     */    
+    function expandCalendarsPanel() {            
+        $('#calendars-panel-expand-btn').hide();
+        $('#calendars-panel-collapse-btn').show();
+        $('#calendars-panel .expandable').show();
+    }
+
+    /**
+     * Handler.
+     * Collapse calendars panel
+     */    
+    function collapseCalendarsPanel() {            
+        $('#calendars-panel-collapse-btn').hide();
+        $('#calendars-panel-expand-btn').show();
+        $('#calendars-panel .expandable').hide();
+    }
+
+    /**
+     * Handler.
+     * Expand calendars panel
+     */    
+    function expandEventsPanel() {            
+        $('#events-panel-expand-btn').hide();
+        $('#events-panel-collapse-btn').show();
+        $('#events-panel .expandable').show();
+    }
+
+    /**
+     * Handler.
+     * Collapse calendars panel
+     */    
+    function collapseEventsPanel() {            
+        $('#events-panel-collapse-btn').hide();
+        $('#events-panel-expand-btn').show();
+        $('#events-panel .expandable').hide();
     }
 
     /**
@@ -214,8 +290,11 @@ function start() {
      * Updates visibility of events panel.
      */
     function updateEventsPanel() {
+
+        var calendarId = $('input[name=calendars-group]:checked').val();
         if ($('input[name=calendars-group]:checked').val()) {
-            $("#events-panel").show();                    
+            $("#events-panel").show();
+            $("#current-calendar").text(calendarId);             
         } else {
             $("#events-panel").hide();
         }
@@ -304,28 +383,35 @@ function start() {
                         return 0;
                     });
 
-                    var text = 'По месяцам:<br>';
+                    var text = 'По месяцам:<br><br>';
                     var month = '';
                     var total = 0;
+                    var yearTotal = 0;
+
                     for (var i = 0; i < response.result.items.length; i++) {
                         var item = response.result.items[i];
                         var itemMonth = (moment(item.start.dateTime).month());
                         if (month != itemMonth) {
                             if (month) {
-                                text += 'Итого: ' + total;
                                 text += '<br>';
+                                text += '<i>Итого: ' + total + ' ₽</i>';
+                                text += '<hr><br>';
                                 total = 0;
                             }
 
-                            text += verboseMonth(itemMonth) + '<br>' ;
+                            text += '<b>' + verboseMonth(itemMonth) + '</b><br>' ;
                             month = itemMonth;
                         }
                         total += isNaN(parseInt(item.summary)) ? 0 : parseInt(item.summary);
-                        text += '<span class="small text-secondary"> * ' + item.summary + '</span>';
-                        text += '<br>';
+                        yearTotal += isNaN(parseInt(item.summary)) ? 0 : parseInt(item.summary);
+                        text += '<span class="small text-black-50">' + item.summary + ',</span>';
                     }
-                    text += 'Итого: ' + total;
                     text += '<br>';
+                    text += '<i>Итого: ' + total + ' ₽</i>';
+                    text += '<hr><br>';
+
+                    text += '<b><i>Всего за год: ' + yearTotal + ' ₽</i></b>';
+                    text += '<br><br>';
                     $('#calculation').html(text);
                 } else {
                     $('#calculation').html('пусто');
