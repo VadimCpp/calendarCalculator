@@ -275,7 +275,7 @@
                             var total = '' + response.result.items.length + ' запись(ей)<br>';
                             var text = total;
                             for (var i = 0; i < response.result.items.length; i++) {
-                                text += response.result.items[i].summary + ' : ' + response.result.items[i].description
+                                text += '<span class="small text-secondary">' + response.result.items[i].summary + ' : ' + (response.result.items[i].description ? response.result.items[i].description : '') + '</span>';
                                 text += '<br>';
                             }
                             $('#events-list').html(text);
@@ -324,12 +324,24 @@
                                 '?timeMin=' + encodeURIComponent(beginningOfCurrentYear),
                     }).then(function(response) {
 
-                        if (response && response.result && response.result.items) {                            
+                        if (response && response.result && response.result.items) {  
+
+                            response.result.items.sort(function(a, b) {
+                                var nameA = a.start.dateTime;
+                                var nameB = b.start.dateTime;
+                                if (nameA < nameB) {
+                                    return -1;
+                                }
+                                if (nameA > nameB) {
+                                    return 1;
+                                }
+                                return 0;
+                            });
+
                             var text = 'По месяцам:<br>';
                             var month = '';
                             var total = 0;
                             for (var i = 0; i < response.result.items.length; i++) {
-
                                 var item = response.result.items[i];
                                 var itemMonth = (moment(item.start.dateTime).month());
                                 if (month != itemMonth) {
@@ -343,7 +355,7 @@
                                     month = itemMonth;
                                 }
                                 total += isNaN(parseInt(item.summary)) ? 0 : parseInt(item.summary);
-                                text += ' + ' + item.summary;
+                                text += '<span class="small text-secondary"> * ' + item.summary + '</span>';
                                 text += '<br>';
                             }
                             text += 'Итого: ' + total;
