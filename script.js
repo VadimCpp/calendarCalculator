@@ -65,6 +65,29 @@ function start() {
     }
 
     /**
+     * Util.
+     * Get verbose name for months
+     */
+    function verboseMonth(number) {
+        var months = [
+            'Январь',
+            'Февраль',
+            'Март',
+            'Апрель',
+            'Май',
+            'Июнь',
+            'Июль',
+            'Август',
+            'Сентябрь',
+            'Октябрь',
+            'Ноябрь',
+            'Декабрь'
+        ];
+
+        return months[number];
+    }
+
+    /**
      * UI method.
      * Updates auth button panel.
      */
@@ -294,7 +317,7 @@ function start() {
                                 total = 0;
                             }
 
-                            text += 'Месяц ' + itemMonth + '<br>' ;
+                            text += verboseMonth(itemMonth) + '<br>' ;
                             month = itemMonth;
                         }
                         total += isNaN(parseInt(item.summary)) ? 0 : parseInt(item.summary);
