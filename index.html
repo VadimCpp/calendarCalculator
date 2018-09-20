@@ -60,6 +60,7 @@
         crossorigin="anonymous"></script>
     <script src="https://apis.google.com/js/api.js"></script>
     <script src="https://momentjs.com/downloads/moment.js"></script>
+    <script src="script.js"></script>
     <script>
         /**
          * Global app variables.
@@ -309,8 +310,6 @@
              * Updates calculation.
              */  
             function updateCalculation() {
-                console.log('updateCalculation');
-
                 var calendarId = $('input[name=calendars-group]:checked').val();
                 
                 $('#calculation').html('...');
