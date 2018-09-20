@@ -160,7 +160,7 @@ function start() {
             for (var i = 0; i < globals.calendarsList.length; i++) {
                 text += 
                     '<li class="list-group-item">' +
-                    '<input type="radio" value="' + globals.calendarsList[i].id + '" name="calendars-group">' +
+                    '<input type="radio" id="radio-btn-' + i + '" value="' + globals.calendarsList[i].id + '" name="calendars-group">' +
                     ' <label for="' + globals.calendarsList[i].id + '">' + globals.calendarsList[i].summary + '</label>' +
                     '</li>';                              
             }
@@ -173,6 +173,14 @@ function start() {
                 updateCalculatorPanel();
                 updateCalculation();
             });
+
+            // select first calendar automatically and load events
+            $("#radio-btn-0").prop("checked", true);
+            updateEventsPanel();
+            updateEventsList();
+            updateCalculatorPanel();
+            updateCalculation();
+
         } else {
             $('#calendars-radio-list').html('');
         }
