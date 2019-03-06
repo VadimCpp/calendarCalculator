@@ -384,15 +384,15 @@ function start() {
                     });
 
                     var text = 'По месяцам:<br><br>';
-                    var month = '';
+                    var month = null;
                     var total = 0;
                     var yearTotal = 0;
 
                     for (var i = 0; i < response.result.items.length; i++) {
                         var item = response.result.items[i];
                         var itemMonth = (moment(item.start.dateTime).month());
-                        if (month != itemMonth) {
-                            if (month) {
+                        if (month !== itemMonth) {
+                            if (month !== null) {
                                 text += '<br>';
                                 text += '<i>Итого: ' + total + ' ₽</i>';
                                 text += '<hr><br>';
