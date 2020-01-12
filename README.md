@@ -8,7 +8,7 @@
 * калькуляция данных.
 
 Пост по теме:
-http://webdev2018.blogspot.com/2018/09/calendar-calculator.html
+https://frontend-basics.blogspot.com/2018/09/calendar-calculator.html
 
 Посмотреть сайт можно:
 https://vadimcpp.github.io/calendarCalculator/
