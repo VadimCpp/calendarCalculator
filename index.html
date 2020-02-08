@@ -8,6 +8,13 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
     <style>
+        .logo-sheep {
+            display: inline;
+            margin: 0 5px;
+        }
+        .logo-sheep-mirrored {
+            transform: scaleX(-1)
+        }
         .one-row {
             padding-right: 50px;
             /* word-break: break-word; */
@@ -21,7 +28,13 @@
 </head>
 <body>
     <header class="container-fluid py-3 bg-dark text-white">
-        <h1 class="text-center h2">Календарь-калькулятор</h1>
+        <h1 class="text-center h2">
+            <!-- Sheep icon: -->
+            <!-- https://www.iconfinder.com/icons/2189577/animal_easter_herd_lamb_livestock_sheep_spring_icon -->
+            <image class="logo-sheep logo-sheep-mirrored" src="sheep.png" alt="sheep" width="40" height="40" />
+            Календарь-калькулятор
+            <image class="logo-sheep" src="sheep.png" alt="sheep" width="40" height="40" />
+        </h1>
     </header>
 
     <!-- Панель управления аккаунтом -->
