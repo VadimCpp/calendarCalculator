@@ -385,6 +385,7 @@ function start() {
 
                     var text = 'По месяцам:<br><br>';
                     var month = null;
+                    var year = null;
                     var total = 0;
                     var yearTotal = 0;
 
@@ -393,8 +394,8 @@ function start() {
                         if (item && item.start) {
                             var itemMonth = (moment(item.start.dateTime).month());
                             var itemYear = (moment(item.start.dateTime).year());
-                            if (month !== itemMonth) {
-                                if (month !== null) {
+                            if (month !== itemMonth || year !== itemYear) {
+                                if (month !== null && year !== null) {
                                     text += '<br>';
                                     text += '<i>Итого: ' + total + ' ₽</i>';
                                     text += '<hr><br>';
@@ -403,6 +404,7 @@ function start() {
 
                                 text += '<b>' + verboseMonth(itemMonth) + ', ' + itemYear + '</b><br>' ;
                                 month = itemMonth;
+                                year = itemYear;
                             }
                             total += isNaN(parseInt(item.summary)) ? 0 : parseInt(item.summary);
                             yearTotal += isNaN(parseInt(item.summary)) ? 0 : parseInt(item.summary);
