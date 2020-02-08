@@ -362,7 +362,7 @@ function start() {
 
         if ($('input[name=calendars-group]:checked').val()) {
 
-            var beginningOfCurrentYear = moment((new Date(new Date().getFullYear(), 0, 1)).getTime()).format();
+            var beginningOfCurrentYear = moment('2019-01-01').format();
 
             gapi.client.request({
                 'path': 'https://www.googleapis.com/calendar/v3/calendars/' + calendarId + '/events' + 
