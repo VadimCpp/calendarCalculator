@@ -372,12 +372,12 @@ function start() {
                 if (response && response.result && response.result.items) {  
 
                     response.result.items.sort(function(a, b) {
-                        var nameA = a.start.dateTime;
-                        var nameB = b.start.dateTime;
-                        if (nameA < nameB) {
+                        var dateA = a.start.dateTime;
+                        var dateB = b.start.dateTime;
+                        if (dateA < dateB) {
                             return -1;
                         }
-                        if (nameA > nameB) {
+                        if (dateA > dateB) {
                             return 1;
                         }
                         return 0;
