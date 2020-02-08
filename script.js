@@ -372,8 +372,8 @@ function start() {
                 if (response && response.result && response.result.items) {  
 
                     response.result.items.sort(function(a, b) {
-                        var dateA = a.start.dateTime;
-                        var dateB = b.start.dateTime;
+                        var dateA = a.start ? a.start.dateTime : 0;
+                        var dateB = b.start ? b.start.dateTime : 0;
                         if (dateA < dateB) {
                             return -1;
                         }
@@ -390,22 +390,24 @@ function start() {
 
                     for (var i = 0; i < response.result.items.length; i++) {
                         var item = response.result.items[i];
-                        var itemMonth = (moment(item.start.dateTime).month());
-                        var itemYear = (moment(item.start.dateTime).year());
-                        if (month !== itemMonth) {
-                            if (month !== null) {
-                                text += '<br>';
-                                text += '<i>Итого: ' + total + ' ₽</i>';
-                                text += '<hr><br>';
-                                total = 0;
-                            }
+                        if (item && item.start) {
+                            var itemMonth = (moment(item.start.dateTime).month());
+                            var itemYear = (moment(item.start.dateTime).year());
+                            if (month !== itemMonth) {
+                                if (month !== null) {
+                                    text += '<br>';
+                                    text += '<i>Итого: ' + total + ' ₽</i>';
+                                    text += '<hr><br>';
+                                    total = 0;
+                                }
 
-                            text += '<b>' + verboseMonth(itemMonth) + ', ' + itemYear + '</b><br>' ;
-                            month = itemMonth;
+                                text += '<b>' + verboseMonth(itemMonth) + ', ' + itemYear + '</b><br>' ;
+                                month = itemMonth;
+                            }
+                            total += isNaN(parseInt(item.summary)) ? 0 : parseInt(item.summary);
+                            yearTotal += isNaN(parseInt(item.summary)) ? 0 : parseInt(item.summary);
+                            text += '<span class="small text-black-50">' + item.summary + ',</span>';
                         }
-                        total += isNaN(parseInt(item.summary)) ? 0 : parseInt(item.summary);
-                        yearTotal += isNaN(parseInt(item.summary)) ? 0 : parseInt(item.summary);
-                        text += '<span class="small text-black-50">' + item.summary + ',</span>';
                     }
                     text += '<br>';
                     text += '<i>Итого: ' + total + ' ₽</i>';
