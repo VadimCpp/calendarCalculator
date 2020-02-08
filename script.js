@@ -391,6 +391,7 @@ function start() {
                     for (var i = 0; i < response.result.items.length; i++) {
                         var item = response.result.items[i];
                         var itemMonth = (moment(item.start.dateTime).month());
+                        var itemYear = (moment(item.start.dateTime).year());
                         if (month !== itemMonth) {
                             if (month !== null) {
                                 text += '<br>';
@@ -399,7 +400,7 @@ function start() {
                                 total = 0;
                             }
 
-                            text += '<b>' + verboseMonth(itemMonth) + '</b><br>' ;
+                            text += '<b>' + verboseMonth(itemMonth) + ', ' + itemYear + '</b><br>' ;
                             month = itemMonth;
                         }
                         total += isNaN(parseInt(item.summary)) ? 0 : parseInt(item.summary);
