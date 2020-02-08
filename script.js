@@ -372,8 +372,8 @@ function start() {
                 if (response && response.result && response.result.items) {  
 
                     response.result.items.sort(function(a, b) {
-                        var dateA = a.start ? a.start.dateTime : 0;
-                        var dateB = b.start ? b.start.dateTime : 0;
+                        var dateA = a.start ? a.start.date : 0;
+                        var dateB = b.start ? b.start.date : 0;
                         if (dateA < dateB) {
                             return -1;
                         }
@@ -392,8 +392,9 @@ function start() {
                     for (var i = 0; i < response.result.items.length; i++) {
                         var item = response.result.items[i];
                         if (item && item.start) {
-                            var itemMonth = (moment(item.start.dateTime).month());
-                            var itemYear = (moment(item.start.dateTime).year());
+                            var itemMonth = (moment(item.start.date).month());
+                            var itemYear = (moment(item.start.date).year());
+
                             if (month !== itemMonth || year !== itemYear) {
                                 if (month !== null && year !== null) {
                                     text += '<br>';
