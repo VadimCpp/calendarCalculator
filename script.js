@@ -387,7 +387,7 @@ function start() {
                     var month = null;
                     var year = null;
                     var total = 0;
-                    var yearTotal = 0;
+                    var yearsTotal = [];
 
                     for (var i = 0; i < response.result.items.length; i++) {
                         var item = response.result.items[i];
@@ -408,16 +408,23 @@ function start() {
                                 year = itemYear;
                             }
                             total += isNaN(parseInt(item.summary)) ? 0 : parseInt(item.summary);
-                            yearTotal += isNaN(parseInt(item.summary)) ? 0 : parseInt(item.summary);
+                            
+                            if (yearsTotal[year] === undefined) {
+                                yearsTotal[year] = 0;
+                            }
+
+                            yearsTotal[year] += isNaN(parseInt(item.summary)) ? 0 : parseInt(item.summary);
                             text += '<span class="small text-black-50">' + item.summary + ',</span>';
                         }
                     }
                     text += '<br>';
                     text += '<i>Итого: ' + total + ' ₽</i>';
-                    text += '<hr><br>';
 
-                    text += '<b><i>Всего за год: ' + yearTotal + ' ₽</i></b>';
-                    text += '<br><br>';
+                    yearsTotal.forEach(function(total, year) {
+                        text += '<hr><br>';
+                        text += '<b><i>Всего за год ' + year + ': ' + total + ' ₽</i></b>';
+                        text += '<br><br>';                        
+                    })
                     $('#calculation').html(text);
                 } else {
                     $('#calculation').html('пусто');
