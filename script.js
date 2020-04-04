@@ -334,9 +334,15 @@ function start() {
                         itemsByYears[itemYear].push(item);
                     }
 
+                    var itemsByYearsReverseArray = []
+                    for (var year in itemsByYears) {
+                        itemsByYearsReverseArray.unshift(year)
+                    }
+
                     // Generate text for every year separately
                     var text = ''
-                    for (var year in itemsByYears) {
+                    for (var reverseIdx = 0; reverseIdx < itemsByYearsReverseArray.length; reverseIdx++) {
+                        var year = itemsByYearsReverseArray[reverseIdx]
                         var itemsOfTheYear = itemsByYears[year];
                         var total = `<b>${itemsOfTheYear.length} запись(ей) в ${year} году<b><br>`;
                         text += total;
