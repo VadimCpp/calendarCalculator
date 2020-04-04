@@ -311,18 +311,38 @@ function start() {
 
         if ($('input[name=calendars-group]:checked').val()) {
 
-            var beginningOfCurrentYear = moment((new Date(new Date().getFullYear(), 0, 1)).getTime()).format();
+            // Records are created sinse 2018, request all records
+            var beginningOf2018 = moment('2018-01-01T00:00:00').format();
 
             gapi.client.request({
                 'path': 'https://www.googleapis.com/calendar/v3/calendars/' + calendarId + '/events' + 
-                        '?timeMin=' + encodeURIComponent(beginningOfCurrentYear),
+                        '?timeMin=' + encodeURIComponent(beginningOf2018) +
+                        '&maxResults=2500',
             }).then(function(response) {
 
                 if (response && response.result && response.result.items) {
-                    var total = '' + response.result.items.length + ' запись(ей)<br>';
-                    var text = total;
+
+                    // Split all items by years
+                    var itemsByYears = {}
                     for (var i = 0; i < response.result.items.length; i++) {
-                        text += '<span class="small text-secondary">' + response.result.items[i].summary + ' : ' + (response.result.items[i].description ? response.result.items[i].description : '') + '</span>';
+                        var item = response.result.items[i]; 
+                        var aDate = item.start.date || item.start.dateTime;
+                        var itemYear = moment(aDate).year();  
+                        if (!itemsByYears[itemYear]) {
+                            itemsByYears[itemYear] = [];
+                        }
+                        itemsByYears[itemYear].push(item);
+                    }
+
+                    // Generate text for every year separately
+                    var text = ''
+                    for (var year in itemsByYears) {
+                        var itemsOfTheYear = itemsByYears[year];
+                        var total = `<b>${itemsOfTheYear.length} запись(ей) в ${year} году<b><br>`;
+                        text += total;
+                        for (var i = 0; i < itemsOfTheYear.length; i++) {
+                            text += `<span class="small text-secondary">${itemsOfTheYear[i].summary}</span> `;
+                        }
                         text += '<br>';
                     }
                     $('#events-list').html(text);
