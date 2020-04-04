@@ -388,18 +388,20 @@ function start() {
 
         if ($('input[name=calendars-group]:checked').val()) {
 
-            var beginningOfCurrentYear = moment('2019-01-01').format();
-
+            // Records are created sinse 2018, request all records
+            var beginningOf2018 = moment('2018-01-01T00:00:00').format();
+            
             gapi.client.request({
                 'path': 'https://www.googleapis.com/calendar/v3/calendars/' + calendarId + '/events' + 
-                        '?timeMin=' + encodeURIComponent(beginningOfCurrentYear),
+                        '?timeMin=' + encodeURIComponent(beginningOf2018) +
+                        '&maxResults=2500',
             }).then(function(response) {
 
                 if (response && response.result && response.result.items) {  
 
                     response.result.items.sort(function(a, b) {
-                        var dateA = a.start ? a.start.date : 0;
-                        var dateB = b.start ? b.start.date : 0;
+                        var dateA = a.start ? a.start.date || a.start.dateTime : 0;
+                        var dateB = b.start ? b.start.date || a.start.dateTime : 0;
                         if (dateA < dateB) {
                             return -1;
                         }
