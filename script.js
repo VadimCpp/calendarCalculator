@@ -392,9 +392,14 @@ function start() {
                     for (var i = 0; i < response.result.items.length; i++) {
                         var item = response.result.items[i];
                         if (item && item.start) {
-                            var itemMonth = (moment(item.start.date).month());
-                            var itemYear = (moment(item.start.date).year());
-
+                            //
+                            // NOTE!
+                            // Иногда поле start содержит date, а иногда - dateTime
+                            // Выбираем то значеие, которое присутствует
+                            //
+                            var aDate = item.start.date || item.start.dateTime;
+                            var itemMonth = (moment(aDate).month());
+                            var itemYear = (moment(aDate).year());
                             if (month !== itemMonth || year !== itemYear) {
                                 if (month !== null && year !== null) {
                                     text += '<br>';
