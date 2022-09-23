@@ -1,5 +1,7 @@
 # calendarCalculator
 
+> Проект закрыт
+
 Список фич:
 
 * вход с аккаунтом google;
@@ -9,9 +11,6 @@
 
 Пост по теме:
 https://frontend-basics.blogspot.com/2018/09/calendar-calculator.html
-
-Посмотреть сайт можно:
-https://vadimcpp.github.io/calendarCalculator/
 
 ## Getting Started
 
